@@ -4,6 +4,12 @@ version = "0.1.0"
 authors = ["jspc <james@zero-internet.org.uk>"]
 edition = "2018"
 
+[features]
+default = ["pic"]
+# Use legacy 8259 pic for hardware interrupts
+pic = []
+apic = []
+
 #[profile.dev]
 #panic = "abort"
 
@@ -30,6 +36,7 @@ volatile = "0.2.6"
 spin = "0.5.2"
 x86_64 = "0.14"
 uart_16550 = "0.2.0"
+pic8259_simple = "0.2.0"
 
 [dependencies.lazy_static]
 version = "1.0"

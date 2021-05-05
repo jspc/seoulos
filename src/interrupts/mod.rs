@@ -1,38 +1,72 @@
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptStackFrame, InterruptDescriptorTable};
 
-use crate::println;
+use crate::{println, print};
 use crate::gdt;
+
+pub mod pic;
+
+trait InterruptController {
+    fn init(&self) -> ();
+    fn eoi(&self, _: u8) -> ();
+    fn index_u8(&self, interrupt: &str) -> u8;
+    fn index_usize(&self, interrupt: &str) -> usize;
+}
+
+#[cfg(feature = "pic")]
+pub static IC: pic::PIC = pic::new();
+
+#[cfg(all(feature = "pic", feature = "apic"))]
+compile_error!("feature \"pic\" and feature \"apic\" cannot be enabled at the same time- choose an interrupt scheme");
 
 
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
+
         idt.breakpoint.set_handler_fn(breakpoint_handler);
         unsafe {
             idt.double_fault.set_handler_fn(double_fault_handler)
                 .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
+        idt[IC.index_usize("timer")].set_handler_fn(timer_interrupt_handler);
+        idt[IC.index_usize("keyboard")].set_handler_fn(keyboard_interrupt_handler);
+
         idt
     };
+}
+
+pub fn init() {
+    init_idt();
+    IC.init();
 }
 
 pub fn init_idt() {
     IDT.load();
 }
 
-extern "x86-interrupt" fn breakpoint_handler(
-    stack_frame: InterruptStackFrame)
-{
+extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
     println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
 }
 
-extern "x86-interrupt" fn double_fault_handler(
-    stack_frame: InterruptStackFrame, _error_code: u64) -> !
-{
+extern "x86-interrupt" fn double_fault_handler(stack_frame: InterruptStackFrame, _error_code: u64) -> ! {
     panic!("EXCEPTION: DOUBLE FAULT\n{:#?}", stack_frame);
 }
+
+extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    print!(".");
+
+    IC.eoi(IC.index_u8("timer"));
+}
+
+
+extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    print!("k");
+
+    IC.eoi(IC.index_u8("keyboard"));
+}
+
 
 #[cfg(test)]
 mod tests {

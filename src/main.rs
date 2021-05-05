@@ -18,7 +18,7 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    loop {}
+    sos_core::hlt_loop();
 }
 
 /// This function is called on panic.
