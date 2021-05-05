@@ -26,7 +26,7 @@ pub struct Writer {
 
 impl Writer {
     pub fn new(pos: usize, colour_code: colours::ColourCode) -> Writer {
-        Writer{
+        Writer {
             column_position: pos,
             colour_code: colour_code,
             buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
@@ -62,7 +62,6 @@ impl Writer {
                 // not part of printable ASCII range
                 _ => self.write_byte(0xfe),
             }
-
         }
     }
 

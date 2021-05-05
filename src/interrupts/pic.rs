@@ -27,16 +27,18 @@ pub struct PIC {
 }
 
 pub const fn new() -> PIC {
-    PIC{pics: spin::Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) }) }
+    PIC {
+        pics: spin::Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) }),
+    }
 }
 
 impl crate::interrupts::InterruptController for PIC {
     fn init(&self) -> () {
-        unsafe{ self.pics.lock().initialize() };
+        unsafe { self.pics.lock().initialize() };
     }
 
     fn eoi(&self, idx: u8) -> () {
-        unsafe{ self.pics.lock().notify_end_of_interrupt(idx) };
+        unsafe { self.pics.lock().notify_end_of_interrupt(idx) };
     }
 
     fn index_u8(&self, interrupt: &str) -> u8 {

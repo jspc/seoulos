@@ -6,7 +6,7 @@ use core::panic::PanicInfo;
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
-use sos_core::{exit_qemu, QemuExitCode, serial_println, serial_print};
+use sos_core::{exit_qemu, serial_print, serial_println, QemuExitCode};
 
 lazy_static! {
     static ref TEST_IDT: InterruptDescriptorTable = {
@@ -29,7 +29,6 @@ extern "x86-interrupt" fn test_double_fault_handler(
     exit_qemu(QemuExitCode::Success);
     loop {}
 }
-
 
 pub fn init_test_idt() {
     TEST_IDT.load();
