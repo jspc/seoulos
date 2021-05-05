@@ -3,6 +3,7 @@ use spin;
 
 const PIC_1_OFFSET: u8 = 32;
 const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
+const PS2_PORT: u16 = 0x60;
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
@@ -52,5 +53,12 @@ impl crate::interrupts::InterruptController for PIC {
             "keyboard" => Index::Keyboard.as_usize(),
             &_ => panic!("unknown interrupt {}", interrupt),
         }
+    }
+
+    fn read_scancode(&self) -> u8 {
+        use x86_64::instructions::port::Port;
+
+        let mut port = Port::new(PS2_PORT);
+        unsafe { port.read() }
     }
 }
