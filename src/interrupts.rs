@@ -11,8 +11,8 @@ use crate::{print, println};
 pub mod pic;
 
 trait InterruptController {
-    fn init(&self) -> ();
-    fn eoi(&self, _: u8) -> ();
+    fn init(&self);
+    fn eoi(&self, _: u8);
     fn index_u8(&self, interrupt: &str) -> u8;
     fn index_usize(&self, interrupt: &str) -> usize;
     fn read_scancode(&self) -> u8;

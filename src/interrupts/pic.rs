@@ -1,5 +1,5 @@
 use pic8259_simple::ChainedPics;
-use spin;
+
 
 const PIC_1_OFFSET: u8 = 32;
 const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
@@ -33,11 +33,11 @@ pub const fn new() -> PIC {
 }
 
 impl crate::interrupts::InterruptController for PIC {
-    fn init(&self) -> () {
+    fn init(&self) {
         unsafe { self.pics.lock().initialize() };
     }
 
-    fn eoi(&self, idx: u8) -> () {
+    fn eoi(&self, idx: u8) {
         unsafe { self.pics.lock().notify_end_of_interrupt(idx) };
     }
 

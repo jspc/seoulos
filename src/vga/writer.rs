@@ -28,7 +28,7 @@ impl Writer {
     pub fn new(pos: usize, colour_code: colours::ColourCode) -> Writer {
         Writer {
             column_position: pos,
-            colour_code: colour_code,
+            colour_code,
             buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
         }
     }
