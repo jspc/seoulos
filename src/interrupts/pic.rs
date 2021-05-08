@@ -1,6 +1,5 @@
 use pic8259_simple::ChainedPics;
 
-
 const PIC_1_OFFSET: u8 = 32;
 const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
 const PS2_PORT: u16 = 0x60;
