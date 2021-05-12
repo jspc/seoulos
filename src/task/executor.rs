@@ -1,8 +1,12 @@
 use alloc::task::Wake;
+use alloc::vec::Vec;
+use alloc::format;
 use alloc::{collections::BTreeMap, sync::Arc};
 use core::task::Waker;
 use core::task::{Context, Poll};
 use crossbeam_queue::ArrayQueue;
+
+use crate::println;
 
 use super::{Task, TaskId};
 
@@ -107,5 +111,17 @@ impl Executor {
         } else {
             interrupts::enable();
         }
+    }
+}
+
+impl core::fmt::Display for Executor {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let mut output = Vec::new();
+
+        for t in self.tasks.values() {
+            output.push(format!("{}", t));
+        }
+
+        write!(f, "{}", output.join("\n"))
     }
 }

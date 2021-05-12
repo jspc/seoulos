@@ -17,6 +17,7 @@ use sos_core::memory;
 use sos_core::memory::frame_allocator::BootInfoFrameAllocator;
 use sos_core::task::{executor::Executor, keyboard, Task};
 use x86_64::VirtAddr;
+use alloc::string::String;
 
 entry_point!(kernel_main);
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
@@ -31,15 +32,17 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     allocator::init(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
-    let mut executor = Executor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
-    executor.run();
-
     #[cfg(test)]
     test_main();
 
-    sos_core::hlt_loop();
+    let mut executor = Executor::new();
+    executor.spawn(Task::new(String::from("example"), example_task()));
+    executor.spawn(Task::new(String::from("kbd"), keyboard::print_keypresses()));
+
+    println!("Registered tasks:");
+    println!("{}", executor);
+
+    executor.run();
 }
 
 async fn async_number() -> u32 {

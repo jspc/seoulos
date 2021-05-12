@@ -4,7 +4,7 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, Pag
 
 use crate::gdt;
 use crate::hlt_loop;
-use crate::{print, println};
+use crate::{println};
 
 pub mod pic;
 
@@ -63,8 +63,6 @@ extern "x86-interrupt" fn double_fault_handler(
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    print!(".");
-
     IC.eoi(IC.index_u8("timer"));
 }
 
