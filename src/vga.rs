@@ -8,7 +8,7 @@ pub mod writer;
 lazy_static! {
     pub static ref WRITER: Mutex<writer::Writer> = Mutex::new(writer::Writer::new(
         0,
-        colours::ColourCode::new(colours::Colour::Yellow, colours::Colour::Black)
+        colours::ColourCode::new(colours::Colour::White, colours::Colour::Black)
     ));
 }
 

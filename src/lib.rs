@@ -26,10 +26,10 @@ use core::panic::PanicInfo;
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};
 
-pub fn init() {
-    gdt::init();
-    interrupts::init();
+pub fn enable_interrupts() -> Result<(), ()> {
     x86_64::instructions::interrupts::enable();
+
+    Ok(())
 }
 
 pub fn hlt_loop() -> ! {
@@ -71,9 +71,18 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 #[cfg(test)]
 entry_point!(test_kernel_main);
 
+pub fn test_init() {
+    // Ignore results from the following in test
+    // (actually, at time of writing at least, these don't really return
+    // anything)
+    let _ = gdt::init();
+    let _ = interrupts::init();
+    let _ = enable_interrupts();
+}
+
 #[cfg(test)]
 fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
-    init();
+    test_init();
     test_main();
     hlt_loop();
 }

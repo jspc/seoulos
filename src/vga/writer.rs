@@ -20,7 +20,8 @@ pub struct Buffer {
 
 pub struct Writer {
     column_position: usize,
-    colour_code: colours::ColourCode,
+    default_colour_code: colours::ColourCode,
+    pub colour_code: colours::ColourCode,
     pub buffer: &'static mut Buffer,
 }
 
@@ -29,6 +30,7 @@ impl Writer {
         Writer {
             column_position: pos,
             colour_code,
+            default_colour_code: colour_code,
             buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
         }
     }
@@ -59,21 +61,34 @@ impl Writer {
             match byte {
                 // printable ASCII byte or newline
                 0x20..=0x7e | b'\n' => self.write_byte(byte),
+
+                // carriage return
+                b'\r' => self.cr(),
+
                 // not part of printable ASCII range
                 _ => self.write_byte(0xfe),
             }
         }
     }
 
-    fn new_line(&mut self) {
+    pub fn reset_colour(&mut self) {
+        self.colour_code = self.default_colour_code;
+    }
+
+    pub fn cr(&mut self) {
+        self.column_position = 0;
+    }
+
+    pub fn new_line(&mut self) {
         for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
                 let character = self.buffer.chars[row][col].read();
                 self.buffer.chars[row - 1][col].write(character);
             }
         }
+
         self.clear_row(BUFFER_HEIGHT - 1);
-        self.column_position = 0;
+        self.cr()
     }
 
     fn clear_row(&mut self, row: usize) {

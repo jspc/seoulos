@@ -1,12 +1,12 @@
-use alloc::task::Wake;
-use alloc::vec::Vec;
 use alloc::format;
+use alloc::string::String;
+use alloc::task::Wake;
+use alloc::vec;
+use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, sync::Arc};
 use core::task::Waker;
 use core::task::{Context, Poll};
 use crossbeam_queue::ArrayQueue;
-
-use crate::println;
 
 use super::{Task, TaskId};
 
@@ -68,6 +68,23 @@ impl Executor {
             self.run_ready_tasks();
             self.sleep_if_idle();
         }
+    }
+
+    /// Draw a little ascii table of tasks in the executor
+    /// This gives us a noddy little way of seeing kernel tasks
+    /// have started properly
+    pub fn table(&self) -> String {
+        let sep = format!("+{:-<4}+{:-<32}+", "", "");
+        let header = format!("|{:^4}|{:^32}|", "id", "name");
+
+        let mut rows = vec![sep.clone(), header, sep.clone()];
+        for t in self.tasks.values() {
+            rows.push(format!("|{:^4}|{:^32.32}|", t.id.0, t.name));
+        }
+
+        rows.push(sep.clone());
+
+        format!("{}", rows.join("\n"))
     }
 
     fn run_ready_tasks(&mut self) {

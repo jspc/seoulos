@@ -4,7 +4,7 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, Pag
 
 use crate::gdt;
 use crate::hlt_loop;
-use crate::{println};
+use crate::println;
 
 pub mod pic;
 
@@ -42,9 +42,11 @@ lazy_static! {
     };
 }
 
-pub fn init() {
+pub fn init() -> Result<(), ()> {
     init_idt();
     IC.init();
+
+    Ok(())
 }
 
 pub fn init_idt() {

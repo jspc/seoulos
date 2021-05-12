@@ -40,7 +40,7 @@ struct Selectors {
     tss_selector: SegmentSelector,
 }
 
-pub fn init() {
+pub fn init() -> Result<(), ()> {
     use x86_64::instructions::segmentation::set_cs;
     use x86_64::instructions::tables::load_tss;
 
@@ -49,4 +49,6 @@ pub fn init() {
         set_cs(GDT.1.code_selector);
         load_tss(GDT.1.tss_selector);
     }
+
+    Ok(())
 }

@@ -23,7 +23,7 @@ fn main(boot_info: &'static BootInfo) -> ! {
     use sos_core::memory::{self, frame_allocator::BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
-    sos_core::init();
+    sos_core::test_init();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };

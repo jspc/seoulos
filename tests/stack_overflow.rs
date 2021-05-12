@@ -38,7 +38,7 @@ pub fn init_test_idt() {
 pub extern "C" fn _start() -> ! {
     serial_print!("stack_overflow::stack_overflow...\t");
 
-    sos_core::gdt::init();
+    sos_core::gdt::init().expect("GDT failed to initialise");
     init_test_idt();
 
     // trigger a stack overflow
